@@ -1,5 +1,7 @@
 open Printf
 
+(* BEGINNER *)
+
 let rec last (xs : 'a list) : 'a option =
     match xs with
     | []        -> None
@@ -34,7 +36,20 @@ let rec rev (xs : 'a list) : 'a list =
     in aux [] xs
 
 let is_palindrome (xs : 'a list) : bool =
-    rev xs = xs
+    List.rev xs = xs
+
+(* INTERMEDIATE *)
+
+type 'a node =
+  | One of 'a
+  | Many of 'a node list
+
+let flatten (xs : 'a node list) : 'a list =
+    let rec aux acc = function
+        | [] -> acc
+        | One x :: tail -> aux (x :: acc) tail
+        | Many x :: tail -> aux (aux acc x) tail
+    in List.rev (aux [] xs)
 
 let () =
     assert ((last [1 ; 2 ; 3]) = (Some 3));
@@ -54,3 +69,7 @@ let () =
     assert ((rev []) = []);
     assert ((is_palindrome [1 ; 2 ; 3]) = false);
     assert ((is_palindrome [1 ; 2 ; 1]) = true);
+
+    assert ((flatten [ One 1 ; Many [ One 2 ; One 3 ] ; One 4 ; Many [ Many [ One 5 ; One 6 ] ] ]) = [1 ; 2 ; 3 ; 4 ; 5 ; 6]);
+    assert ((flatten []) = []);
+    assert ((flatten [ One 1 ; One 2 ]) = [ 1 ; 2 ]);
