@@ -51,6 +51,27 @@ let flatten (xs : 'a node list) : 'a list =
         | Many x :: tail -> aux (aux acc x) tail
     in List.rev (aux [] xs)
 
+let compress (xs : 'a list) : 'a list =
+    let rec aux acc = function
+        | [] -> acc
+        | [x] -> x :: acc
+        | fst :: snd :: tail ->
+            let new_acc = if fst <> snd then
+                fst :: acc
+                else acc
+            in
+            aux new_acc (snd :: tail)
+    in List.rev (aux [] xs)
+
+(* stopped here *)
+
+(*let pack (xs : 'a list) : 'a list list =*)
+(*    let rec aux acc = function*)
+(*        | [] -> acc*)
+(*        | head :: (snd :: _ as tail) -> head*)
+(*        | smaller -> smaller*)
+(*    in aux [] xs*)
+
 let () =
     assert ((last [1 ; 2 ; 3]) = (Some 3));
     assert ((last []) = None);
@@ -73,3 +94,8 @@ let () =
     assert ((flatten [ One 1 ; Many [ One 2 ; One 3 ] ; One 4 ; Many [ Many [ One 5 ; One 6 ] ] ]) = [1 ; 2 ; 3 ; 4 ; 5 ; 6]);
     assert ((flatten []) = []);
     assert ((flatten [ One 1 ; One 2 ]) = [ 1 ; 2 ]);
+    assert ((compress []) = []);
+    assert ((compress [ 1 ; 1 ; 1 ; 2 ; 3 ; 3 ]) = [ 1 ; 2 ; 3 ]);
+    assert ((compress ["a"; "a"; "a"; "a"; "b"; "c"; "c"; "a"; "a"; "d"; "e"; "e"; "e"; "e"]) = ["a"; "b"; "c"; "a"; "d"; "e"]);
+
+    (*assert ((pack ["a"; "a"; "a"; "a"; "b"; "c"; "c"; "a"; "a"; "d"; "d"; "e"; "e"; "e"; "e"]) = [["a"; "a"; "a"; "a"]; ["b"]; ["c"; "c"]; ["a"; "a"]; ["d"; "d"]; ["e"; "e"; "e"; "e"]]);*)
